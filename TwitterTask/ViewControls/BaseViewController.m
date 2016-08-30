@@ -187,6 +187,8 @@
 
 -(void)showActivityViewer
 {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     UIWindow *window = delegate.window;
     activityView = [[UIView alloc] initWithFrame: CGRectMake(0, 0, window.bounds.size.width, window.bounds.size.height)];
@@ -199,7 +201,7 @@
                                       UIViewAutoresizingFlexibleRightMargin |
                                       UIViewAutoresizingFlexibleTopMargin |
                                       UIViewAutoresizingFlexibleBottomMargin);
-    [activityWheel setColor:[UIColor orangeColor]];
+    [activityWheel setColor:[UIColor colorWithRed:32.0/255.0 green:145.0/255.0 blue:206.0/255.0 alpha:1]];
     [activityView addSubview:activityWheel];
     [window addSubview: activityView];
     
@@ -207,6 +209,7 @@
 }
 -(void)hideActivityViewer
 {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:FALSE];
     [[[activityView subviews] objectAtIndex:0] stopAnimating];
     [activityView removeFromSuperview];
     activityView = nil;
@@ -236,7 +239,7 @@
             }
         }
     }
-    UIViewController * viewController = [self.storyboard instantiateViewControllerWithIdentifier:SeagueLoginScreen];
+    UIViewController * viewController = [self.storyboard instantiateViewControllerWithIdentifier:LoginScreenName];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 @end
