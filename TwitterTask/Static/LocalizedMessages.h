@@ -14,6 +14,9 @@
 #define loginLblText                            ICLocalizedString(@"loginLblText",@"")
 
 //////////////////////////////////General////////////////////////////////////////
+#define ApplicationTitleText                    ICLocalizedString(@"ApplicationTitleText",@"")
+#define OKayButtonText                          ICLocalizedString(@"OKayButtonText",@"")
+#define CancelButtonText                        ICLocalizedString(@"CancelButtonText",@"")
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
