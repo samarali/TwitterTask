@@ -96,6 +96,38 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    
+    if ([[url scheme] isEqualToString:@"myapplication"] == NO) return NO;
+    
+    NSDictionary *d = [self parametersDictionaryFromQueryString:[url query]];
+    
+    NSString *token = d[@"oauth_token"];
+    NSString *verifier = d[@"oauth_verifier"];
+    
+    LoginViewController *loginController = (LoginViewController *)[((CustomNavigationController*)self.centerController) getTopView ];
+    [loginController setOAuthToken:token oauthVerifier:verifier];
+    
+    return YES;
+}
+
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+{
+    
+}
+
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    
+    
+    
+}
 
 #pragma mark - view deck delegate
 
@@ -143,30 +175,7 @@
     return YES;
 }
 
--(void)switchMenuDirection{
-    IIViewDeckController* deckController =(IIViewDeckController*)self.window.rootViewController;
-    UIViewController* menuControler=nil;
-    if(deckController.rightController!=nil)
-        menuControler=deckController.rightController;
-    else if (deckController.leftController!=nil)
-        menuControler=deckController.leftController;
-    if(menuControler==nil)return;
-    
-    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main"
-                                                             bundle: nil];
 
-    if(currentLang==English){
-        deckController.leftController= [mainStoryboard instantiateViewControllerWithIdentifier:@"SideMenuViewController"];
-        self.leftController=menuControler;
-        self.rightController=nil;
-        deckController.rightController=nil;
-    }else{
-        deckController.rightController=[mainStoryboard instantiateViewControllerWithIdentifier:@"SideMenuViewController"];//menuControler;
-        self.rightController=menuControler;
-        self.leftController=nil;
-        deckController.leftController=nil;
-    }
-}
 #pragma mark - funtions
 
 -(void) SetAppLanguage{
@@ -185,23 +194,49 @@
     }
 }
 
-
-
-
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-
+- (NSDictionary *)parametersDictionaryFromQueryString:(NSString *)queryString {
+    
+    NSMutableDictionary *md = [NSMutableDictionary dictionary];
+    
+    NSArray *queryComponents = [queryString componentsSeparatedByString:@"&"];
+    
+    for(NSString *s in queryComponents) {
+        NSArray *pair = [s componentsSeparatedByString:@"="];
+        if([pair count] != 2) continue;
+        
+        NSString *key = pair[0];
+        NSString *value = pair[1];
+        
+        md[key] = value;
+    }
+    
+    return md;
 }
 
-- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
-{
-    
-}
 
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+-(void)switchMenuDirection{
+    IIViewDeckController* deckController =(IIViewDeckController*)self.window.rootViewController;
+    UIViewController* menuControler=nil;
+    if(deckController.rightController!=nil)
+        menuControler=deckController.rightController;
+    else if (deckController.leftController!=nil)
+        menuControler=deckController.leftController;
+    if(menuControler==nil)return;
     
-
+    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main"
+                                                             bundle: nil];
     
+    if(currentLang==English){
+        deckController.leftController= [mainStoryboard instantiateViewControllerWithIdentifier:@"SideMenuViewController"];
+        self.leftController=menuControler;
+        self.rightController=nil;
+        deckController.rightController=nil;
+    }else{
+        deckController.rightController=[mainStoryboard instantiateViewControllerWithIdentifier:@"SideMenuViewController"];//menuControler;
+        self.rightController=menuControler;
+        self.leftController=nil;
+        deckController.leftController=nil;
+    }
 }
 
 
