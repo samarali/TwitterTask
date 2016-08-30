@@ -32,18 +32,31 @@ typedef enum myLanguages{
 
 
 /////////////////////////////////////////////////////////////////
-//////////////////////View Seague constants///////////////////////
+//////////////////////View Controls constants///////////////////////
 //////////////////////////////////////////////////////////////////
-#define SeagueLoginScreen                          @"LoginViewController"
+#define LoginScreenName                            @"LoginViewController"
+
+/////////////////////////////login constants/////////////////////////////
+#define ConsumerKey                                @"zszxXhZxlET04NanfFWyMftEU"
+#define ConsumerSecret                             @"YZS7PtBOrQl5VCEzmsLN4hk2odv1vkENniwyJ9IasBiIndWAp9"
+#define ConsumerKeyName                            @"consumerKey"
+#define ConsumerSecretKeyName                      @"consumerSecretKey"
+#define AccessTokenName                            @"accessToken"
+#define AccessTokenSecretName                      @"accessTokenSecret"
 
 ///////////////////////////Services general/////////////////////////////////
 
 
-///////////////////////////////////web service////////////////////////////
-
-
-/////////////////////////////login web service/////////////////////////////
-
-
+///////////////////////////////////User Constant////////////////////////////
+#define fullNameKey                                @"fullName"
+#define descriptionKey                             @"description"
+#define followersCountKey                          @"followersCount"
+#define userIDKey                                  @"userID"
+#define profileBackgroundImageUrlKey               @"profileBackgroundImageUrl"
+#define profileBackgroundImageUrlHttpsKey          @"profileBackgroundImageUrlHttps"
+#define profileImageUrlKey                         @"profileImageUrl"
+#define profileImageUrlHttpsKey                    @"profileImageUrlHttps"
+#define screenNameKey                              @"screenName"
+#define userLangKey                                @"userLang"
 
 #endif
