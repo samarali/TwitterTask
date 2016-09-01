@@ -51,25 +51,31 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     AppDelegate *appDelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
     AccountObj *userObj = [[AccountObj alloc] init];
     userObj = [CommonFuntions getSavedData];
     //update the app lanuguage with last selected language
-    if(![CommonFuntions isStringNull:userObj.screenName])
+    if(![CommonFuntions isStringNull:[[NSUserDefaults standardUserDefaults] objectForKey: userLangKey]] && ![CommonFuntions isStringEmpty:[[NSUserDefaults standardUserDefaults] objectForKey: userLangKey]])
     {
-        appDelegate.userObj = userObj;
-        if(appDelegate.currentLang!=userObj.userLang)
+        NSString *lastLanguageStr = [[NSUserDefaults standardUserDefaults] objectForKey: userLangKey];
+        if(appDelegate.currentLang!=[lastLanguageStr integerValue])
             [self onLanguagePressed:nil];
-        appDelegate.currentLang=userObj.userLang;
+        appDelegate.currentLang=(MyLanguages)[lastLanguageStr integerValue];
     }
+    else{
+        [defaults setObject:[NSString stringWithFormat:@"%i",appDelegate.currentLang] forKey:userLangKey];
+        [defaults synchronize];
+    }
+    
     
     appDelegate.twitter = [[STTwitterAPI alloc] init];
     
     if (!appDelegate.islogOut) {
         if ([CommonFuntions hasConnectivity]) {
             if ([CommonFuntions isStringNull:[[NSUserDefaults standardUserDefaults] objectForKey: ConsumerKeyName]] || [CommonFuntions isStringNull:[[NSUserDefaults standardUserDefaults] objectForKey: ConsumerSecretKeyName]]) {
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                
                 [defaults setObject:ConsumerKey forKey:ConsumerKeyName];
                 [defaults setObject:ConsumerSecret forKey:ConsumerSecretKeyName];
                 [defaults synchronize];
@@ -177,13 +183,19 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
 -(void) setAppLanguage{
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     NSString *language=@"";
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
     if(delegate.currentLang==Arabic){
         language=@"en";
         delegate.currentLang=English;
+        [defaults setObject:@"1" forKey:userLangKey];
     }else if(delegate.currentLang==English){
         language= @"ar";
         delegate.currentLang=Arabic;
+        [defaults setObject:@"0" forKey:userLangKey];
     }
+    [defaults synchronize];
+    
     
     ICLocalizationSetLanguage(language);
     
@@ -246,7 +258,6 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
     appdelegate.userObj.profileImageUrl = [account objectForKey:profileBackgroundImageUrlKey];
     appdelegate.userObj.profileImageUrlHttps = [account objectForKey:profileBackgroundImageUrlHttpsKey];
     appdelegate.userObj.screenName = [NSString stringWithFormat:@"@%@",[account objectForKey:screenNameKey]];
-    appdelegate.userObj.userLang = appdelegate.currentLang;
     
     [CommonFuntions createFile:appdelegate.userObj];
     
