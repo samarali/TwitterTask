@@ -11,6 +11,9 @@
 #import "CustomNavigationController.h"
 #import "StaticVariables.h"
 #import "LoginViewController.h"
+#import "FollowersViewController.h"
+#import "AccountObj.h"
+#import "CommonFuntions.h"
 
 @interface BaseViewController ()
 
@@ -111,7 +114,58 @@
 
 -(IBAction)onHomePressed:(id)sender
 {
+    AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AccountObj * obj= [CommonFuntions getSavedData];
     
+    if(!appdelegate.islogOut){
+        
+        if(obj==nil||obj.screenName==nil||[CommonFuntions isStringEmpty:obj.screenName])
+        {
+            LoginViewController *dash=[self.storyboard instantiateViewControllerWithIdentifier:LoginScreenName];
+            if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
+                [self.navigationController pushViewController:dash animated:YES];
+            }else{
+                for (UIViewController *viewController in self.navigationController.viewControllers) {
+                    if ([viewController class] == [LoginViewController class]) {
+                        [self.navigationController popToViewController:viewController animated:NO];
+                        break;
+                    }
+                }
+            }
+        }
+        else{
+            FollowersViewController *followerController=[self.storyboard instantiateViewControllerWithIdentifier:FollowerScreenName];
+            
+            followerController.loadFromServer = FALSE;
+            
+            if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
+                [self.navigationController pushViewController:followerController animated:YES];
+            }else{
+                for (UIViewController *viewController in self.navigationController.viewControllers) {
+                    if ([viewController class] == [FollowersViewController class]) {
+                        [self.navigationController popToViewController:viewController animated:NO];
+                        break;
+                        
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        LoginViewController *login=[self.storyboard instantiateViewControllerWithIdentifier:LoginScreenName];
+        if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
+            [self.navigationController pushViewController:login animated:YES];
+        }else{
+            for (UIViewController *viewController in self.navigationController.viewControllers) {
+                if ([viewController class] == [LoginViewController class]) {
+                    [self.navigationController popToViewController:viewController animated:NO];
+                    break;
+                    
+                }
+            }
+        }
+    }
     
     
 }
@@ -223,11 +277,116 @@
 
 #pragma mark - methods
 
+-(NSMutableArray *)runQuery:(NSString *)query{
+    NSMutableArray *listOfFollowers = [[NSMutableArray alloc] init];
+    
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"TwitterTask.sqlite"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath: path]){
+        NSString *bundle = [[NSBundle mainBundle] pathForResource:@"TwitterTask" ofType:@"sqlite"];
+        [fileManager copyItemAtPath:bundle toPath: path error:&error];
+    }
+    sqlite3 *sqlite3Database;
+    
+    // Open the database.
+    if(sqlite3_open([path UTF8String], &sqlite3Database) == SQLITE_OK) {
+        sqlite3_stmt *statement;
+        sqlite3_prepare_v2(sqlite3Database, [query UTF8String], -1, &statement, nil);
+        
+        NSMutableDictionary *obj;
+        // Loop through the results and add them to the results array row by row.
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            
+            // Get the total number of columns.
+            int totalColumns = sqlite3_column_count(statement);
+            obj = [[NSMutableDictionary alloc] init];
+            // Go through all columns and fetch each column data.
+            for (int i=0; i<totalColumns; i++){
+                char *dbDataNameAsChars = (char *)sqlite3_column_name(statement, i);
+                char *dbDataAsChars = (char *)sqlite3_column_text(statement, i);
+                
+                [obj setValue:[NSString stringWithUTF8String:dbDataAsChars] forKey:[NSString  stringWithUTF8String:dbDataNameAsChars]];
+            }
+            // Store each fetched data row in the results array, but first check if there is actually data.
+            [listOfFollowers addObject:obj];
+        }
+        
+        sqlite3_finalize(statement);
+    }
+    // Close the database.
+    sqlite3_close(sqlite3Database);
+    
+    
+    return listOfFollowers;
+}
+-(void)runQuery:(NSString *)query listOfFollowers:(NSMutableArray *)listOfFollowers isInsertStat:(BOOL)isInsertStat{
+    AccountObj *obj;
+    
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"TwitterTask.sqlite"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath: path]){
+        NSString *bundle = [[NSBundle mainBundle] pathForResource:@"TwitterTask" ofType:@"sqlite"];
+        [fileManager copyItemAtPath:bundle toPath: path error:&error];
+    }
+    sqlite3 *sqlite3Database;
+    
+    // Open the database.
+    if(sqlite3_open([path UTF8String], &sqlite3Database) == SQLITE_OK) {
+        sqlite3_stmt *statement;
+        sqlite3_prepare_v2(sqlite3Database, [query UTF8String], -1, &statement, nil);
+        
+        if (isInsertStat) {
+            for (int i =0; i < [listOfFollowers count]; i++) {
+                obj = [[AccountObj alloc] init];//2
+                obj = [listOfFollowers objectAtIndex:i];
+                sqlite3_bind_text(statement,((i*10) + 1), [obj.fullName UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 2), [obj.description UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 3), [obj.followersCount UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 4), [obj.statusCount UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 5), [obj.userID UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 6), [obj.profileBackgroundImageUrl UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 7), [obj.profileBackgroundImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 8), [obj.profileImageUrl UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 9), [obj.profileImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement, ((i*10) + 10), [obj.screenName UTF8String], -1, SQLITE_TRANSIENT);
+            }
+            
+        }
+        // Execute the query.
+        if (sqlite3_step(statement) == SQLITE_DONE)
+            NSLog(@"Query was executed successfully. Affected rows = %d", sqlite3_changes(sqlite3Database));
+        else
+            NSLog(@"DB Error: %s", sqlite3_errmsg(sqlite3Database));
+        
+        sqlite3_finalize(statement);
+    }
+    // Close the database.
+    sqlite3_close(sqlite3Database);
+    
+    
+    
+    
+}
+
 
 -(void)logout{
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     delegate.islogOut=YES;
-
+    [CommonFuntions clearUserData];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:@"" forKey:AccessTokenName];
+    [defaults setObject:@"" forKey:AccessTokenSecretName];
+    [defaults synchronize];
+    
     if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
         //[self.navigationController popToRootViewControllerAnimated:NO];
     }else{

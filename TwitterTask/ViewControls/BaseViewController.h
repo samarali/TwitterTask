@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <sqlite3.h>
 
 @interface BaseViewController : UIViewController{
     UIView *activityView;
@@ -35,7 +36,8 @@
 
 
 -(void)logout;
-
+-(NSMutableArray *)runQuery:(NSString *)query;
+-(void)runQuery:(NSString *)query listOfFollowers:(NSMutableArray *)listOfFollowers isInsertStat:(BOOL)isInsertStat;
 
 @end
 
