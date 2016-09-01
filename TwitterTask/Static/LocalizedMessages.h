@@ -12,13 +12,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////login////////////////////////////////////////////////
 #define loginLblText                            ICLocalizedString(@"loginLblText",@"")
-
+//////////////////////////////////Follower List////////////////////////////////////////
+#define FollowersTitleText                      ICLocalizedString(@"FollowersTitleText",@"")
+#define FollowersNoDataFoundMsg                 ICLocalizedString(@"FollowersNoDataFoundMsg",@"")
+#define UserNameText                            ICLocalizedString(@"UserNameText",@"")
+#define UserUsernameText                        ICLocalizedString(@"UserUsernameText",@"")
+#define UserBioText                             ICLocalizedString(@"UserBioText",@"")
+/////////////////////////////////////Menu items////////////////////////////////////////////////
+#define MenuItemProfileText                      ICLocalizedString(@"MenuItemProfileText",@"")
+#define MenuItemChangeLangText                   ICLocalizedString(@"MenuItemChangeLangText",@"")
+#define MenuItemUsersText                        ICLocalizedString(@"MenuItemUsersText",@"")
+#define MenuItemLogoutText                       ICLocalizedString(@"MenuItemLogoutText",@"")
+#define MenuTitleText                            ICLocalizedString(@"MenuTitleText",@"")
 //////////////////////////////////General////////////////////////////////////////
 #define ApplicationTitleText                    ICLocalizedString(@"ApplicationTitleText",@"")
 #define OKayButtonText                          ICLocalizedString(@"OKayButtonText",@"")
 #define CancelButtonText                        ICLocalizedString(@"CancelButtonText",@"")
-
-
+/////////////////////////////update language//////////////////////////////////////////
+#define UpdateLanguageConfirmationMsg           ICLocalizedString(@"UpdateLanguageConfirmationMsg",@"")
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
