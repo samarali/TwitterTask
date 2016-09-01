@@ -11,6 +11,7 @@
     NSString* fullName;
     NSString* description;
     NSString* followersCount;
+    NSString* statusCount;
     NSString* userID;
     NSString* profileBackgroundImageUrl;
     NSString* profileBackgroundImageUrlHttps;
@@ -23,6 +24,7 @@
 @property(nonatomic,retain) NSString* fullName;
 @property(nonatomic,retain) NSString* description;
 @property(nonatomic,retain) NSString* followersCount;
+@property(nonatomic,retain) NSString* statusCount;
 @property(nonatomic,retain) NSString* userID;
 @property(nonatomic,retain) NSString* profileBackgroundImageUrl;
 @property(nonatomic,retain) NSString* profileBackgroundImageUrlHttps;

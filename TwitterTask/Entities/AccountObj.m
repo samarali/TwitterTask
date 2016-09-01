@@ -12,6 +12,7 @@
 @synthesize fullName;
 @synthesize description;
 @synthesize followersCount;
+@synthesize statusCount;
 @synthesize userID;
 @synthesize profileBackgroundImageUrl;
 @synthesize profileBackgroundImageUrlHttps;
