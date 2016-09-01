@@ -16,7 +16,16 @@ typedef enum myLanguages{
     English=1
 }MyLanguages;
 
+typedef enum mainMenuItems{
+    MyProfileItem=0,
+    ChangeLangItem,
+    UsersItem,
+    LogoutItem
+    
+}MainMenuItems;
+
 #define MenuStartX                                70
+#define NumberMenuItems                           4
 
 ///////////////////////////////////////////////////////////////////////////////
 #define nilOrJSONObjectForKey(JSON_, KEY_) [[JSON_ objectForKey:KEY_] isKindOfClass:[NSNull null]] ? nil : [JSON_ objectForKey:KEY_];
@@ -35,6 +44,7 @@ typedef enum myLanguages{
 //////////////////////View Controls constants///////////////////////
 //////////////////////////////////////////////////////////////////
 #define LoginScreenName                            @"LoginViewController"
+#define FollowerScreenName                         @"FollowersViewController"
 
 /////////////////////////////login constants/////////////////////////////
 #define ConsumerKey                                @"zszxXhZxlET04NanfFWyMftEU"
@@ -48,15 +58,16 @@ typedef enum myLanguages{
 
 
 ///////////////////////////////////User Constant////////////////////////////
-#define fullNameKey                                @"fullName"
+#define fullNameKey                                @"name"
 #define descriptionKey                             @"description"
-#define followersCountKey                          @"followersCount"
-#define userIDKey                                  @"userID"
-#define profileBackgroundImageUrlKey               @"profileBackgroundImageUrl"
-#define profileBackgroundImageUrlHttpsKey          @"profileBackgroundImageUrlHttps"
-#define profileImageUrlKey                         @"profileImageUrl"
-#define profileImageUrlHttpsKey                    @"profileImageUrlHttps"
-#define screenNameKey                              @"screenName"
+#define followersCountKey                          @"followers_count"
+#define statusCountKey                             @"statuses_count"
+#define userIDKey                                  @"id_str"
+#define profileBackgroundImageUrlKey               @"profile_background_image_url"
+#define profileBackgroundImageUrlHttpsKey          @"profile_background_image_url_https"
+#define profileImageUrlKey                         @"profile_image_url"
+#define profileImageUrlHttpsKey                    @"profile_image_url_https"
+#define screenNameKey                              @"screen_name"
 #define userLangKey                                @"userLang"
 
 #endif
