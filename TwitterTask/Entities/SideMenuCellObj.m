@@ -99,18 +99,23 @@
     CustomNavigationController *nav=(CustomNavigationController*)appDelegate.centerController;
     [((BaseViewController*)[nav getTopView]) onMenuButtonPressed:nil];
 
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
     NSString *language=@"";
     if(appDelegate.currentLang==Arabic){
         appDelegate.currentLang=English;
         language=@"en";
+        [defaults setObject:@"1" forKey:userLangKey];
     }else{
         appDelegate.currentLang=Arabic;
         language= @"ar";
+        [defaults setObject:@"0" forKey:userLangKey];
     }
+    [defaults synchronize];
+    
     ICLocalizationSetLanguage(language);
     
-    appDelegate.userObj.userLang=appDelegate.currentLang;
-    [CommonFuntions createFile:appDelegate.userObj];
     [appDelegate switchMenuDirection];
     [((BaseViewController*)[nav getTopView]) onHomePressed:nil];
     [CommonFuntions showAlertWithTitle:ApplicationTitleText Message:UpdateLanguageConfirmationMsg];
