@@ -7,6 +7,7 @@
 //
 
 #import "LoginViewController.h"
+#import "FollowersViewController.h"
 #import "LocalizedMessages.h"
 #import "AppDelegate.h"
 #import "CommonFuntions.h"
@@ -18,7 +19,6 @@
 typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage); // don't bother with NSError for that
 
 @interface LoginViewController ()
-@property (nonatomic, strong) STTwitterAPI *twitter;
 @end
 
 @implementation LoginViewController
@@ -29,7 +29,6 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
 @synthesize controlsView;
 @synthesize savedAccessToken;
 @synthesize savedAccessTokenSecret;
-@synthesize userObj;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -53,42 +52,56 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
 {
     [super viewDidLoad];
     
-    AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
-    userObj = [[AccountObj alloc] init];
+    AppDelegate *appDelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AccountObj *userObj = [[AccountObj alloc] init];
     userObj = [CommonFuntions getSavedData];
     //update the app lanuguage with last selected language
     if(![CommonFuntions isStringNull:userObj.screenName])
     {
-        if(appdelegate.currentLang!=userObj.userLang)
+        appDelegate.userObj = userObj;
+        if(appDelegate.currentLang!=userObj.userLang)
             [self onLanguagePressed:nil];
-        appdelegate.currentLang=userObj.userLang;
+        appDelegate.currentLang=userObj.userLang;
     }
     
-    if ([CommonFuntions isStringNull:[[NSUserDefaults standardUserDefaults] objectForKey: ConsumerKeyName]] || [CommonFuntions isStringNull:[[NSUserDefaults standardUserDefaults] objectForKey: ConsumerSecretKeyName]]) {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:ConsumerKey forKey:ConsumerKeyName];
-        [defaults setObject:ConsumerSecret forKey:ConsumerSecretKeyName];
-        [defaults synchronize];
-    }
+    appDelegate.twitter = [[STTwitterAPI alloc] init];
     
-    savedAccessToken = [[NSUserDefaults standardUserDefaults] objectForKey: AccessTokenName];
-    savedAccessTokenSecret = [[NSUserDefaults standardUserDefaults] objectForKey: AccessTokenSecretName];
-    
-    if (![savedAccessToken isEqualToString:@""] && ![CommonFuntions isStringNull:savedAccessToken]) {
-        [self showActivityViewer];
-        self.twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:ConsumerKey consumerSecret:ConsumerSecret oauthToken:savedAccessToken oauthTokenSecret:savedAccessTokenSecret];
-        
-        [_twitter getAccountVerifyCredentialsWithIncludeEntites:nil skipStatus:nil includeEmail:nil successBlock:^(NSDictionary *account) {
+    if (!appDelegate.islogOut) {
+        if ([CommonFuntions hasConnectivity]) {
+            if ([CommonFuntions isStringNull:[[NSUserDefaults standardUserDefaults] objectForKey: ConsumerKeyName]] || [CommonFuntions isStringNull:[[NSUserDefaults standardUserDefaults] objectForKey: ConsumerSecretKeyName]]) {
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                [defaults setObject:ConsumerKey forKey:ConsumerKeyName];
+                [defaults setObject:ConsumerSecret forKey:ConsumerSecretKeyName];
+                [defaults synchronize];
+            }
             
-            [self save_userData:account lang:appdelegate.currentLang];
+            savedAccessToken = [[NSUserDefaults standardUserDefaults] objectForKey: AccessTokenName];
+            savedAccessTokenSecret = [[NSUserDefaults standardUserDefaults] objectForKey: AccessTokenSecretName];
             
-            [self hideActivityViewer];
-        }errorBlock:^(NSError *error) {
-            [CommonFuntions showAlertWithTitle:ApplicationTitleText Message:[error localizedDescription]];
-            [self hideActivityViewer];
-        }];
-        
+            if (![savedAccessToken isEqualToString:@""] && ![CommonFuntions isStringNull:savedAccessToken]) {
+                [self showActivityViewer];
+                appDelegate.twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:ConsumerKey consumerSecret:ConsumerSecret oauthToken:savedAccessToken oauthTokenSecret:savedAccessTokenSecret];
+                
+                [appDelegate.twitter getAccountVerifyCredentialsWithIncludeEntites:nil skipStatus:nil includeEmail:nil successBlock:^(NSDictionary *account) {
+                    
+                    [self saveUserData:account];
+                    [self loadFollowerScreen:YES];
+                    [self hideActivityViewer];
+                }errorBlock:^(NSError *error) {
+                    [CommonFuntions showAlertWithTitle:ApplicationTitleText Message:[error localizedDescription]];
+                    [self hideActivityViewer];
+                }];
+                
+            }
+        }
+        else if (userObj != nil)
+        {
+            [self loadFollowerScreen:FALSE];
+        }
     }
+    
+    
+    
     
 }
 
@@ -120,11 +133,13 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
 #pragma mark - events
 
 -(IBAction)onLoginPressed:(id)sender{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    self.twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:ConsumerKey
-                                                 consumerSecret:ConsumerSecret oauthToken:nil oauthTokenSecret:nil];
+    appDelegate.twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:ConsumerKey
+                                                        consumerSecret:ConsumerSecret oauthToken:nil oauthTokenSecret:nil];
+
     [self showActivityViewer];
-    [_twitter postTokenRequest:^(NSURL *url, NSString *oauthToken) {
+    [appDelegate.twitter postTokenRequest:^(NSURL *url, NSString *oauthToken) {
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         
         [self previewWebview:request];
@@ -190,19 +205,20 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
 
 - (void)setOAuthToken:(NSString *)token oauthVerifier:(NSString *)verifier {
     [self hideWebview];
-    [_twitter postAccessTokenRequestWithPIN:verifier successBlock:^(NSString *oauthToken, NSString *oauthTokenSecret , NSString *userID, NSString *screenName) {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [appDelegate.twitter postAccessTokenRequestWithPIN:verifier successBlock:^(NSString *oauthToken, NSString *oauthTokenSecret , NSString *userID, NSString *screenName) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:_twitter.oauthAccessToken forKey:AccessTokenName];
-        [defaults setObject:_twitter.oauthAccessTokenSecret forKey:AccessTokenSecretName];
+        [defaults setObject:appDelegate.twitter.oauthAccessToken forKey:AccessTokenName];
+        [defaults setObject:appDelegate.twitter.oauthAccessTokenSecret forKey:AccessTokenSecretName];
         [defaults synchronize];
         
-        AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
+        
         [self showActivityViewer];
         
-        [_twitter getAccountVerifyCredentialsWithIncludeEntites:nil skipStatus:nil includeEmail:nil successBlock:^(NSDictionary *account) {
+        [appDelegate.twitter getAccountVerifyCredentialsWithIncludeEntites:nil skipStatus:nil includeEmail:nil successBlock:^(NSDictionary *account) {
             
-            [self save_userData:account lang:appdelegate.currentLang];
-            
+            [self saveUserData:account];
+            [self loadFollowerScreen:YES];
             [self hideActivityViewer];
         }errorBlock:^(NSError *error) {
             [CommonFuntions showAlertWithTitle:ApplicationTitleText Message:[error localizedDescription]];
@@ -215,21 +231,32 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
     }];
     
 }
--(void)save_userData:(NSDictionary *)account lang:(MyLanguages)lang
+-(void)saveUserData:(NSDictionary *)account
 {
-    userObj = [[AccountObj alloc] init];
-    userObj.fullName = [account objectForKey:@"name"];
-    userObj.description = [account objectForKey:@"description"];
-    userObj.followersCount = [NSString stringWithFormat:@"%li",[[account objectForKey:@"followers_count"] integerValue]];
-    userObj.userID = [account objectForKey:@"id_str"];
-    userObj.profileBackgroundImageUrl = [account objectForKey:@"profile_background_image_url"];
-    userObj.profileBackgroundImageUrlHttps = [account objectForKey:@"profile_background_image_url_https"];
-    userObj.profileImageUrl = [account objectForKey:@"profile_image_url"];
-    userObj.profileImageUrlHttps = [account objectForKey:@"profile_image_url_https"];
-    userObj.screenName = [account objectForKey:@"screen_name"];
-    userObj.userLang = lang;
+    AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
+    appdelegate.userObj=[[AccountObj alloc] init];
+    appdelegate.userObj = [[AccountObj alloc] init];
+    appdelegate.userObj.fullName = [account objectForKey:fullNameKey];
+    appdelegate.userObj.description = [account objectForKey:descriptionKey];
+    appdelegate.userObj.followersCount = [NSString stringWithFormat:@"%li",[[account objectForKey:followersCountKey] integerValue]];
+    appdelegate.userObj.statusCount = [NSString stringWithFormat:@"%li",[[account objectForKey:statusCountKey] integerValue]];
+    appdelegate.userObj.userID = [account objectForKey:userIDKey];
+    appdelegate.userObj.profileBackgroundImageUrl = [account objectForKey:profileBackgroundImageUrlKey];
+    appdelegate.userObj.profileBackgroundImageUrlHttps = [account objectForKey:profileBackgroundImageUrlHttpsKey];
+    appdelegate.userObj.profileImageUrl = [account objectForKey:profileBackgroundImageUrlKey];
+    appdelegate.userObj.profileImageUrlHttps = [account objectForKey:profileBackgroundImageUrlHttpsKey];
+    appdelegate.userObj.screenName = [NSString stringWithFormat:@"@%@",[account objectForKey:screenNameKey]];
+    appdelegate.userObj.userLang = appdelegate.currentLang;
     
-    [CommonFuntions createFile:userObj];
+    [CommonFuntions createFile:appdelegate.userObj];
+    
+    
+}
+-(void)loadFollowerScreen:(BOOL)loadfromServer
+{
+    FollowersViewController *followerController = (FollowersViewController *)[self.storyboard instantiateViewControllerWithIdentifier:FollowerScreenName];
+    followerController.loadFromServer = loadfromServer;
+    [self.navigationController pushViewController:followerController animated:YES];
 }
 
 #pragma mark- webview delegate
@@ -244,14 +271,8 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
 #pragma mark STTwitterAPIOSProtocol
 
 - (void)twitterAPI:(STTwitterAPI *)twitterAPI accountWasInvalidated:(ACAccount *)invalidatedAccount {
-    if(twitterAPI != _twitter) return;
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(twitterAPI != appDelegate.twitter) return;
 }
 
-
-
-#pragma mark- alert delegate
-
--(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    
-}
 @end

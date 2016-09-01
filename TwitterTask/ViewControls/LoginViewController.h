@@ -12,7 +12,7 @@
 #import "STHTTPRequest+STTwitter.h"
 #import "AccountObj.h"
 
-@interface LoginViewController : BaseViewController<UIAlertViewDelegate,STTwitterAPIOSProtocol,UIWebViewDelegate>{
+@interface LoginViewController : BaseViewController<STTwitterAPIOSProtocol,UIWebViewDelegate>{
   
     UIButton *loginBtn;
     UIButton *langBtn;
@@ -29,7 +29,6 @@
 @property (nonatomic,retain) IBOutlet UIView *controlsView;
 @property (nonatomic,retain) NSString *savedAccessToken;
 @property (nonatomic,retain) NSString *savedAccessTokenSecret;
-@property (nonatomic,retain) AccountObj *userObj;
 
 
 - (void)setOAuthToken:(NSString *)token oauthVerifier:(NSString *)verfier;
