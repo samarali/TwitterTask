@@ -111,7 +111,6 @@
     [data setObject:obj.profileImageUrl forKey:profileImageUrlKey];
     [data setObject:obj.profileImageUrlHttps forKey:profileImageUrlHttpsKey];
     [data setObject:obj.screenName forKey:screenNameKey];
-    [data setObject:[NSNumber numberWithInt:(int)obj.userLang] forKey:userLangKey];
     
     [data writeToFile: path atomically:YES];
 }
@@ -138,9 +137,6 @@
         obj.profileImageUrl = [savedData objectForKey:profileImageUrlKey];
         obj.profileImageUrlHttps = [savedData objectForKey:profileImageUrlHttpsKey];
         obj.screenName = [savedData objectForKey:screenNameKey];
-    
-        
-        obj.userLang=(MyLanguages)[[savedData objectForKey:userLangKey] intValue];
         return obj;
     }
     return nil;
