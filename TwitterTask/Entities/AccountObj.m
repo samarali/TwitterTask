@@ -19,7 +19,6 @@
 @synthesize profileImageUrl;
 @synthesize profileImageUrlHttps;
 @synthesize screenName;
-@synthesize userLang;
 
 
 @end
