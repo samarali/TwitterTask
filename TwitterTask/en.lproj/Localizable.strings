@@ -7,7 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////login////////////////////////////////////////////////
 loginLblText                            ="Login";
+//////////////////////////////////Follower List////////////////////////////////////////
+FollowersTitleText                       ="Followers";
+FollowersNoDataFoundMsg                  ="No Followers";
+UserNameText                             ="Name:";
+UserUsernameText                         ="UserName:";
+UserBioText                              ="Bio:";
+/////////////////////////////////////Menu items////////////////////////////////////////////////
+MenuItemProfileText                      ="My Profile";
+MenuItemChangeLangText                   ="English";
+MenuItemUsersText                        ="Users";
+MenuItemLogoutText                       ="Logout";
+MenuTitleText                            ="Menu";
 //////////////////////////////////General////////////////////////////////////////
 ApplicationTitleText                     ="Twitter";
 OKayButtonText                           ="OK";
 CancelButtonText                         ="Cancel";
+/////////////////////////////update language//////////////////////////////////////////
+UpdateLanguageConfirmationMsg            ="Language has been updated";
