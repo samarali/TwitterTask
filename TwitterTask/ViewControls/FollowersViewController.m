@@ -142,7 +142,6 @@
     uObj.profileImageUrl = [objDic objectForKey:profileImageUrlKey];
     uObj.profileImageUrlHttps = [objDic objectForKey:profileImageUrlHttpsKey];
     uObj.screenName = [NSString stringWithFormat:@"@%@",[objDic objectForKey:screenNameKey]];
-    uObj.userLang = lang;
     return uObj;
 }
 
