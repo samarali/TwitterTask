@@ -9,11 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "IIViewDeckController.h"
 #import "StaticVariables.h"
+#import "AccountObj.h"
+#import "STTwitterAPI.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate,IIViewDeckControllerDelegate>{
     BOOL pased;
     MyLanguages currentLang;
     BOOL islogOut;
+    STTwitterAPI *twitter;
 }
 
 
@@ -26,7 +29,9 @@
 @property (retain, nonatomic) UIViewController *rightController;
 @property (nonatomic, readwrite) BOOL canPan;
 @property (nonatomic)MyLanguages currentLang;
+@property (nonatomic,retain) AccountObj *userObj;
 @property (nonatomic) BOOL islogOut;
+@property (nonatomic, retain) STTwitterAPI *twitter;
 
 - (IIViewDeckController*)generateControllerStack;
 

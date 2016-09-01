@@ -8,10 +8,10 @@
 
 #import "AppDelegate.h"
 #import "CustomNavigationController.h"
+#import "SideMenuViewController.h"
 #import "LocalizationSystem.h"
 #import "LoginViewController.h"
 #import "LocalizedMessages.h"
-#import <LocalAuthentication/LocalAuthentication.h>
 
 @implementation AppDelegate
 
@@ -21,7 +21,9 @@
 @synthesize rightController =_rightController;
 @synthesize canPan = _canPan;
 @synthesize currentLang;
+@synthesize userObj;
 @synthesize islogOut;
+@synthesize twitter;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -145,17 +147,15 @@
 
 
 - (IIViewDeckController*)generateControllerStack {
-    
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main"
                                                              bundle: nil];
-    
-
+    SideMenuViewController* menuController = [mainStoryboard instantiateViewControllerWithIdentifier:@"SideMenuViewController"];
     
     CustomNavigationController *centerController = [mainStoryboard instantiateViewControllerWithIdentifier:@"CustomNavigationController"];
-    IIViewDeckController* deckController =  [[IIViewDeckController alloc] initWithCenterViewController:centerController leftViewController:nil rightViewController:nil];
+    IIViewDeckController* deckController =  [[IIViewDeckController alloc] initWithCenterViewController:centerController leftViewController:menuController rightViewController:nil];
     if(currentLang==Arabic){
         deckController.leftController=nil;
-        deckController.rightController=nil;
+        deckController.rightController=menuController;
     }
         deckController.leftSize = MenuStartX;
         deckController.rightSize = MenuStartX;
