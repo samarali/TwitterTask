@@ -37,7 +37,7 @@
 
 -(void)logout;
 -(NSMutableArray *)runQuery:(NSString *)query;
--(void)runQuery:(NSString *)query listOfFollowers:(NSMutableArray *)listOfFollowers isInsertStat:(BOOL)isInsertStat;
+-(void)runQuery:(NSString *)query listOfFollowers:(NSMutableArray *)listOfFollowers listOfTweets:(NSMutableArray *)listOfTweets isInsertStat:(BOOL)isInsertStat;
 
 @end
 

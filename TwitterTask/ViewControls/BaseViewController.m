@@ -13,6 +13,7 @@
 #import "LoginViewController.h"
 #import "FollowersViewController.h"
 #import "AccountObj.h"
+#import "TweetObj.h"
 #import "CommonFuntions.h"
 
 @interface BaseViewController ()
@@ -136,7 +137,10 @@
         else{
             FollowersViewController *followerController=[self.storyboard instantiateViewControllerWithIdentifier:FollowerScreenName];
             
-            followerController.loadFromServer = FALSE;
+            if ([CommonFuntions hasConnectivity])
+                followerController.loadFromServer = FALSE;
+            else
+                followerController.loadFromServer = FALSE;
             
             if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
                 [self.navigationController pushViewController:followerController animated:YES];
@@ -283,11 +287,11 @@
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"TwitterTask.sqlite"];
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@",dbNameKey, dbTypeKey]];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     if (![fileManager fileExistsAtPath: path]){
-        NSString *bundle = [[NSBundle mainBundle] pathForResource:@"TwitterTask" ofType:@"sqlite"];
+        NSString *bundle = [[NSBundle mainBundle] pathForResource:dbNameKey ofType:dbTypeKey];
         [fileManager copyItemAtPath:bundle toPath: path error:&error];
     }
     sqlite3 *sqlite3Database;
@@ -323,17 +327,17 @@
     
     return listOfFollowers;
 }
--(void)runQuery:(NSString *)query listOfFollowers:(NSMutableArray *)listOfFollowers isInsertStat:(BOOL)isInsertStat{
-    AccountObj *obj;
+-(void)runQuery:(NSString *)query listOfFollowers:(NSMutableArray *)listOfFollowers listOfTweets:(NSMutableArray *)listOfTweets isInsertStat:(BOOL)isInsertStat{
+    
     
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"TwitterTask.sqlite"];
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@",dbNameKey, dbTypeKey]];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     if (![fileManager fileExistsAtPath: path]){
-        NSString *bundle = [[NSBundle mainBundle] pathForResource:@"TwitterTask" ofType:@"sqlite"];
+        NSString *bundle = [[NSBundle mainBundle] pathForResource:dbNameKey ofType:dbTypeKey];
         [fileManager copyItemAtPath:bundle toPath: path error:&error];
     }
     sqlite3 *sqlite3Database;
@@ -344,20 +348,35 @@
         sqlite3_prepare_v2(sqlite3Database, [query UTF8String], -1, &statement, nil);
         
         if (isInsertStat) {
-            for (int i =0; i < [listOfFollowers count]; i++) {
-                obj = [[AccountObj alloc] init];//2
-                obj = [listOfFollowers objectAtIndex:i];
-                sqlite3_bind_text(statement,((i*10) + 1), [obj.fullName UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 2), [obj.description UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 3), [obj.followersCount UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 4), [obj.statusCount UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 5), [obj.userID UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 6), [obj.profileBackgroundImageUrl UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 7), [obj.profileBackgroundImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 8), [obj.profileImageUrl UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 9), [obj.profileImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
-                sqlite3_bind_text(statement, ((i*10) + 10), [obj.screenName UTF8String], -1, SQLITE_TRANSIENT);
+            if (listOfFollowers != nil) {
+                AccountObj *obj;
+                for (int i =0; i < [listOfFollowers count]; i++) {
+                    obj = [[AccountObj alloc] init];//2
+                    obj = [listOfFollowers objectAtIndex:i];
+                    sqlite3_bind_text(statement,((i*10) + 1), [obj.fullName UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 2), [obj.description UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 3), [obj.followersCount UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 4), [obj.statusCount UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 5), [obj.userID UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 6), [obj.profileBackgroundImageUrl UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 7), [obj.profileBackgroundImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 8), [obj.profileImageUrl UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 9), [obj.profileImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*10) + 10), [obj.screenName UTF8String], -1, SQLITE_TRANSIENT);
+                }
             }
+            else if (listOfTweets != nil)
+            {
+                TweetObj *obj;
+                for (int i =0; i < [listOfTweets count]; i++) {
+                    obj = [[TweetObj alloc] init];//2
+                    obj = [listOfTweets objectAtIndex:i];
+                    sqlite3_bind_text(statement,((i*3) + 1), [obj.creatorObj.userID UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*3) + 2), [obj.createdAt UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*3) + 3), [obj.value UTF8String], -1, SQLITE_TRANSIENT);
+                }
+            }
+
             
         }
         // Execute the query.
