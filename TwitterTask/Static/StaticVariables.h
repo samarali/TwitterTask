@@ -45,14 +45,12 @@ typedef enum mainMenuItems{
 //////////////////////////////////////////////////////////////////
 #define LoginScreenName                            @"LoginViewController"
 #define FollowerScreenName                         @"FollowersViewController"
-#define TwitterScreenName                          @"TweetsViewController"
+#define TweetsScreenName                           @"TweetsViewController"
 /////////////////////////////login constants/////////////////////////////
 #define ConsumerKey                                @"zszxXhZxlET04NanfFWyMftEU"
 #define ConsumerSecret                             @"YZS7PtBOrQl5VCEzmsLN4hk2odv1vkENniwyJ9IasBiIndWAp9"
 #define ConsumerKeyName                            @"consumerKey"
 #define ConsumerSecretKeyName                      @"consumerSecretKey"
-#define AccessTokenName                            @"accessToken"
-#define AccessTokenSecretName                      @"accessTokenSecret"
 
 ///////////////////////////general general/////////////////////////////////
 #define dbNameKey                                  @"TwitterTask"
@@ -62,6 +60,7 @@ typedef enum mainMenuItems{
 #define insertStatmentKey                          @"insert into "
 #define followerTableKey                           @"follower "
 #define tweetTableKey                              @"tweet "
+#define userTableKey                               @"user "
 ///////////////////////////////////User Constant////////////////////////////
 #define fullNameKey                                @"name"
 #define descriptionKey                             @"description"
@@ -73,7 +72,11 @@ typedef enum mainMenuItems{
 #define profileImageUrlKey                         @"profile_image_url"
 #define profileImageUrlHttpsKey                    @"profile_image_url_https"
 #define screenNameKey                              @"screen_name"
+#define parentIDKey                                @"parent_ID"
 #define userLangKey                                @"userLang"
+#define accessTokenKey                             @"accesstoken_secret"
+#define accessTokenSecretKey                       @"accesstoken"
+
 ///////////////////////////////////Tweet Constant////////////////////////////
 #define tweetTimeKey                               @"created_at"
 #define tweetCreatorIDKey                          @"creator_ID"
