@@ -13,6 +13,7 @@
 #import "STTwitterAPI.h"
 #import "NSError+STTwitter.h"
 #import "STHTTPRequest+STTwitter.h"
+#import "NSDictionary+NotNull.h"
 
 @interface TweetsViewController ()
 @end
@@ -38,8 +39,10 @@
     if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
         [tableView setSeparatorInset:UIEdgeInsetsZero];
     }
-    if (loadFromServer)
+    if (loadFromServer){
         [self loadTweetsOnline];
+        [self initRefreshControl:self.tableView];
+    }
     else{
         [self loadTweetsOffline];
         
@@ -88,7 +91,8 @@
         {
             [self fillTweetsArray:statuses];
             [self updateimages:[listOfTweets objectAtIndex:0]];
-            [self updateDB:YES];
+            [self deleteOldTweets];
+            [self AddNewTweetsDB];
         }
         [tableView reloadData];
         [self hideActivityViewer];
@@ -118,7 +122,7 @@
 
 -(TweetObj *)convertDicToTweet:(NSMutableDictionary *)objDic{
     TweetObj *tObj = [[TweetObj alloc] init];
-    tObj.createdAt = [objDic objectForKey:tweetTimeKey];
+    tObj.createdAt = [objDic objectForKeyedSubscript:tweetTimeKey];
     
     tObj.creatorObj = [[AccountObj alloc] init];
     
@@ -127,13 +131,17 @@
     tObj.creatorObj.profileImageUrlHttps = [NSString stringWithFormat:@"%@",[objDic valueForKeyPath:[NSString stringWithFormat:@"%@%@",tweetUserObjKey,profileImageUrlHttpsKey]]];
     tObj.creatorObj.screenName = [NSString stringWithFormat:@"@%@",[objDic valueForKeyPath:[NSString stringWithFormat:@"%@%@",tweetUserObjKey,screenNameKey]]];
     
-    tObj.value = [objDic objectForKey:tweetTextKey];
+    tObj.value = [objDic objectForKeyedSubscript:tweetTextKey];
     return tObj;
 }
 
 
 -(void)updateimages:(TweetObj *)obj{
     
+    if (![CommonFuntions isStringEmpty:obj.creatorObj.profileImageUrlHttps]) {
+        obj.creatorObj.profileImageUrlHttps = [obj.creatorObj.profileImageUrlHttps stringByReplacingOccurrencesOfString:@"_normal"
+                                             withString:@""];
+    }
     UIView *blockview = [[UIView alloc] initWithFrame:userProfileImg.frame];
     [blockview setBackgroundColor:[UIColor clearColor]];
     [self.view insertSubview:blockview aboveSubview:userProfileImg];
@@ -167,33 +175,30 @@
     });
     
     
-    
-    
-    imageURL =[NSURL URLWithString:obj.creatorObj.profileBackgroundImageUrlHttps];
-    
-    queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-    dispatch_async(queue, ^{
+    if (![CommonFuntions isStringEmpty:obj.creatorObj.profileBackgroundImageUrlHttps]) {
+        imageURL =[NSURL URLWithString:obj.creatorObj.profileBackgroundImageUrlHttps];
         
-        NSData *data = [NSData dataWithContentsOfURL:imageURL];
-        if (data) {
-            UIImage *image = [UIImage imageWithData:data];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                userBGImg.image = image;
-            });
-        }
-    });
-    
-    
-    
-}
--(void)updateDB:(BOOL)firsttime{
-    //CREATE TABLE tweet(_id integer primary key, creator_ID text, created_at text, value text);
-    NSString *query;
-    //delete old records if it called from login page
-    if (firsttime) {
-    
-        [self runQuery:[NSString stringWithFormat:@"%@%@",deleteStatmentKey,tweetTableKey] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+        queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+        dispatch_async(queue, ^{
+            
+            NSData *data = [NSData dataWithContentsOfURL:imageURL];
+            if (data) {
+                UIImage *image = [UIImage imageWithData:data];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    userBGImg.image = image;
+                });
+            }
+        });
     }
+}
+-(void)deleteOldTweets
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [self runQuery:[NSString stringWithFormat:@"%@%@ where %@=%@",deleteStatmentKey,tweetTableKey,tweetCreatorIDKey,selectedUser] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+}
+
+-(void)AddNewTweetsDB{
+    NSString *query;
     query = @"insert into tweet values";
     for (int i = 0; i < [listOfTweets count]; i++) {
         if (i == 0)
@@ -246,7 +251,15 @@
     return dic;
 }
 
-
+-(void)initRefreshControl:(UITableView*)tblView{
+    refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl setTintColor:[UIColor whiteColor]];
+    UIColor *color = [UIColor colorWithRed:236.0/255.0 green:236.0/255.0 blue:236.0/255.0 alpha:1];
+    [refreshControl setBackgroundColor:color];
+    refreshControl.layer.zPosition = tblView.backgroundView.layer.zPosition + 1;
+    [refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
+    [tblView addSubview:refreshControl];
+}
 
 
 #pragma mark - table delegate
@@ -362,6 +375,12 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark - events
+#pragma mark - refresh
+
+- (void)refresh:(UIRefreshControl *)refreshControl_ {
+    [self loadTweetsOnline];
+    [refreshControl endRefreshing];
+}
+
 
 @end
