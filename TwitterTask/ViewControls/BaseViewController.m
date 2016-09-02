@@ -15,6 +15,7 @@
 #import "AccountObj.h"
 #import "TweetObj.h"
 #import "CommonFuntions.h"
+#import "NSDictionary+NotNull.h"
 
 @interface BaseViewController ()
 
@@ -38,7 +39,6 @@
     BGImage.image=[UIImage imageNamed:@"bg.png"];
     self.view.backgroundColor=[ UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1];
     [self initalizeViews];
-    
 }
 
 -(void) viewWillAppear:(BOOL)animated{
@@ -116,7 +116,7 @@
 -(IBAction)onHomePressed:(id)sender
 {
     AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
-    AccountObj * obj= [CommonFuntions getSavedData];
+    AccountObj * obj= [self getloggedinUSer];
     
     if(!appdelegate.islogOut){
         
@@ -138,7 +138,7 @@
             FollowersViewController *followerController=[self.storyboard instantiateViewControllerWithIdentifier:FollowerScreenName];
             
             if ([CommonFuntions hasConnectivity])
-                followerController.loadFromServer = FALSE;
+                followerController.loadFromServer = YES;
             else
                 followerController.loadFromServer = FALSE;
             
@@ -210,11 +210,10 @@
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
     [self onMenuButtonPressed:nil];
 }
+
 - (void)initalizeViews {
     
 }
-
-
 
 #pragma mark - localize lables
 
@@ -238,7 +237,6 @@
 -(void)switchToArabicLayout{
     
 }
-
 
 #pragma mark- activity funtions
 
@@ -282,7 +280,7 @@
 #pragma mark - methods
 
 -(NSMutableArray *)runQuery:(NSString *)query{
-    NSMutableArray *listOfFollowers = [[NSMutableArray alloc] init];
+    NSMutableArray *list = [[NSMutableArray alloc] init];
     
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -313,10 +311,15 @@
                 char *dbDataNameAsChars = (char *)sqlite3_column_name(statement, i);
                 char *dbDataAsChars = (char *)sqlite3_column_text(statement, i);
                 
+                
+                if (dbDataAsChars != nil) {
+                    NSLog(@"%@",[NSString stringWithUTF8String:dbDataAsChars]);
+                }
+                
                 [obj setValue:[NSString stringWithUTF8String:dbDataAsChars] forKey:[NSString  stringWithUTF8String:dbDataNameAsChars]];
             }
             // Store each fetched data row in the results array, but first check if there is actually data.
-            [listOfFollowers addObject:obj];
+            [list addObject:obj];
         }
         
         sqlite3_finalize(statement);
@@ -325,7 +328,7 @@
     sqlite3_close(sqlite3Database);
     
     
-    return listOfFollowers;
+    return list;
 }
 -(void)runQuery:(NSString *)query listOfFollowers:(NSMutableArray *)listOfFollowers listOfTweets:(NSMutableArray *)listOfTweets isInsertStat:(BOOL)isInsertStat{
     
@@ -353,16 +356,18 @@
                 for (int i =0; i < [listOfFollowers count]; i++) {
                     obj = [[AccountObj alloc] init];//2
                     obj = [listOfFollowers objectAtIndex:i];
-                    sqlite3_bind_text(statement,((i*10) + 1), [obj.fullName UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 2), [obj.description UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 3), [obj.followersCount UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 4), [obj.statusCount UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 5), [obj.userID UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 6), [obj.profileBackgroundImageUrl UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 7), [obj.profileBackgroundImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 8), [obj.profileImageUrl UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 9), [obj.profileImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
-                    sqlite3_bind_text(statement, ((i*10) + 10), [obj.screenName UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement,((i*11) + 1), [obj.fullName UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 2), [obj.description UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 3), [obj.followersCount UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 4), [obj.statusCount UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 5), [obj.userID UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 6), [obj.profileBackgroundImageUrl UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 7), [obj.profileBackgroundImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 8), [obj.profileImageUrl UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 9), [obj.profileImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 10), [obj.screenName UTF8String], -1, SQLITE_TRANSIENT);
+                    sqlite3_bind_text(statement, ((i*11) + 11), [obj.parentID UTF8String], -1, SQLITE_TRANSIENT);
+                    
                 }
             }
             else if (listOfTweets != nil)
@@ -375,6 +380,16 @@
                     sqlite3_bind_text(statement, ((i*3) + 2), [obj.createdAt UTF8String], -1, SQLITE_TRANSIENT);
                     sqlite3_bind_text(statement, ((i*3) + 3), [obj.value UTF8String], -1, SQLITE_TRANSIENT);
                 }
+            }
+            else
+            {
+                AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
+                sqlite3_bind_text(statement,1, [appdelegate.userObj.screenName UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement,2, [appdelegate.userObj.userID UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement,3, [appdelegate.userObj.profileBackgroundImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement,4, [appdelegate.userObj.profileImageUrlHttps UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement,5, [appdelegate.userObj.accessTokenSecret UTF8String], -1, SQLITE_TRANSIENT);
+                sqlite3_bind_text(statement,6, [appdelegate.userObj.accessToken UTF8String], -1, SQLITE_TRANSIENT);
             }
 
             
@@ -395,11 +410,67 @@
     
 }
 
+-(void)loadFollowerScreen:(BOOL)loadfromServer
+{
+    FollowersViewController *followerController = (FollowersViewController *)[self.storyboard instantiateViewControllerWithIdentifier:FollowerScreenName];
+    followerController.loadFromServer = loadfromServer;
+    [self.navigationController pushViewController:followerController animated:YES];
+}
+-(void)saveUserData:(NSMutableDictionary *)account
+{
+    AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
+    appdelegate.userObj = [[AccountObj alloc] init];
+    appdelegate.userObj.userID = [account objectForKeyedSubscript:userIDKey];
+    NSString *profileBackgroundImageUrlHttps = [account objectForKeyedSubscript:profileBackgroundImageUrlHttpsKey];
+    if ([CommonFuntions isStringNull:profileBackgroundImageUrlHttps]) {
+        profileBackgroundImageUrlHttps = @"";
+    }
+    appdelegate.userObj.profileBackgroundImageUrlHttps = profileBackgroundImageUrlHttps;
+    appdelegate.userObj.profileImageUrlHttps = [account objectForKeyedSubscript:profileImageUrlHttpsKey];
+    appdelegate.userObj.screenName = [NSString stringWithFormat:@"@%@",[account objectForKeyedSubscript:screenNameKey]];
+    appdelegate.userObj.accessToken = [NSString stringWithFormat:@"%@",[account objectForKeyedSubscript:accessTokenKey]];
+    appdelegate.userObj.accessTokenSecret = [NSString stringWithFormat:@"%@",[account objectForKeyedSubscript:accessTokenSecretKey]];
+    
+    NSString *query;
+    query = @"update user set is_selected='0'";
+    [self runQuery:query listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+    
+    NSMutableArray *listOfusers;
+    listOfusers = [self runQuery:[NSString stringWithFormat:@"%@%@ where id_str=%@",selectStatmentKey,userTableKey,appdelegate.userObj.userID]];
+    if ([listOfusers count]>0){
+        query = [NSString stringWithFormat:@"update %@ set is_selected='1' where id_str=%@",userTableKey,appdelegate.userObj.userID];
+        [self runQuery:query listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+    }else
+    {
+        query = [NSString stringWithFormat:@"%@ %@ values(null, ?, ?, ?, ?, ?, ?, '1')",insertStatmentKey,userTableKey];
+        [self runQuery:query listOfFollowers:nil listOfTweets:nil isInsertStat:YES];
+    }
+    
+    
+}
 
+-(AccountObj*)getloggedinUSer{
+    AccountObj *userObj=[[AccountObj alloc] init];
+    
+    NSMutableArray *listOfusers = [[NSMutableArray alloc] init];
+    listOfusers = [self runQuery:[NSString stringWithFormat:@"%@%@ where is_selected=1",selectStatmentKey,userTableKey]];
+    if ([listOfusers count] > 0) {
+        NSMutableDictionary *user = [listOfusers objectAtIndex:0];
+        userObj = [[AccountObj alloc] init];
+        userObj.screenName = [user objectForKeyedSubscript:screenNameKey];
+        userObj.userID = [user objectForKeyedSubscript:userIDKey];
+        userObj.profileBackgroundImageUrlHttps = [user objectForKeyedSubscript:profileBackgroundImageUrlHttpsKey];
+        userObj.profileImageUrlHttps = [user objectForKeyedSubscript:profileImageUrlHttpsKey];
+        userObj.accessToken = [user objectForKeyedSubscript:accessTokenKey];
+        userObj.accessTokenSecret = [user objectForKeyedSubscript:accessTokenSecretKey];
+        return userObj;
+    }
+    return nil;
+    
+}
 -(void)logout{
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     delegate.islogOut=YES;
-    [CommonFuntions clearUserData];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"" forKey:AccessTokenName];
@@ -420,4 +491,24 @@
     UIViewController * viewController = [self.storyboard instantiateViewControllerWithIdentifier:LoginScreenName];
     [self.navigationController pushViewController:viewController animated:YES];
 }
+-(void)initRefreshControl:(UITableView*)tableView{
+    refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl setTintColor:[UIColor whiteColor]];
+    UIColor *color = [UIColor colorWithRed:236.0/255.0 green:236.0/255.0 blue:236.0/255.0 alpha:1];
+    [refreshControl setBackgroundColor:color];
+    refreshControl.layer.zPosition = tableView.backgroundView.layer.zPosition + 1;
+    [refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
+    [tableView addSubview:refreshControl];
+    
+}
+
+- (void)refresh:(UIRefreshControl *)refreshControl_ {
+}
+#pragma mark - refresh data
+-(void) refreshView{
+    
+}
+
+
+
 @end
