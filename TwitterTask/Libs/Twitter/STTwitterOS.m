@@ -67,7 +67,7 @@ const NSString *STTwitterOSInvalidatedAccount = @"STTwitterOSInvalidatedAccount"
     return @"System";
 }
 
-- (void)verifyCredentialsRemotelyWithSuccessBlock:(void(^)(NSString *username, NSString *userID))successBlock
+- (void)verifyCredentialsRemotelyWithSuccessBlock:(void(^)(NSDictionary *account))successBlock
                                        errorBlock:(void(^)(NSError *error))errorBlock {
     
     __weak typeof(self) weakSelf = self;
@@ -91,7 +91,7 @@ const NSString *STTwitterOSInvalidatedAccount = @"STTwitterOSInvalidatedAccount"
                }
                
                NSDictionary *dict = response;
-               successBlock(dict[@"screen_name"], dict[@"id_str"]);
+               successBlock(dict);
            } errorBlock:^(NSObject<STTwitterRequestProtocol> *request, NSDictionary *requestHeaders, NSDictionary *responseHeaders, NSError *error) {
                
                // add recovery suggestion if we can

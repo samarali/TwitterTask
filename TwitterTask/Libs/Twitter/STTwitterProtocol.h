@@ -20,7 +20,7 @@
                                       errorBlock:(void(^)(NSError *error))errorBlock;
 
 // called after verifyCredentialsLocallyWithSuccessBlock: to ensure that the Twitter account is usable by Remote access
-- (void)verifyCredentialsRemotelyWithSuccessBlock:(void(^)(NSString *username, NSString *userID))successBlock
+- (void)verifyCredentialsRemotelyWithSuccessBlock:(void(^)(NSDictionary *account))successBlock
                                        errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (NSObject<STTwitterRequestProtocol> *)fetchResource:(NSString *)resource

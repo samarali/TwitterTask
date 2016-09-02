@@ -125,7 +125,7 @@ authenticateInsteadOfAuthorize:authenticateInsteadOfAuthorize
                                errorBlock:errorBlock];
 }
 
-- (void)verifyCredentialsWithUserSuccessBlock:(void(^)(NSString *username, NSString *userID))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
+- (void)verifyCredentialsWithUserSuccessBlock:(void(^)(NSDictionary *account))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
     
     __weak typeof(self) weakSelf = self;
     
@@ -140,17 +140,17 @@ authenticateInsteadOfAuthorize:authenticateInsteadOfAuthorize
         if(username) [strongSelf setUserName:username];
         if(userID) [strongSelf setUserID:userID];
         
-        [_oauth verifyCredentialsRemotelyWithSuccessBlock:^(NSString *username, NSString *userID) {
+        [_oauth verifyCredentialsRemotelyWithSuccessBlock:^(NSDictionary *account) {
             
             if(strongSelf == nil) {
                 errorBlock(nil);
                 return;
             }
             
-            [strongSelf setUserName:username];
-            [strongSelf setUserID:userID];
+            [strongSelf setUserName:[account objectForKey:@"screen_name"]];
+            [strongSelf setUserID:[account objectForKey:@"id_str"]];
             
-            successBlock(username, userID);
+            successBlock(account);
         } errorBlock:^(NSError *error) {
             errorBlock(error);
         }];

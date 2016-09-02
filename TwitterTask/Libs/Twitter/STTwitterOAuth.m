@@ -212,13 +212,18 @@
     successBlock(nil, nil); // no local check
 }
 
-- (void)verifyCredentialsRemotelyWithSuccessBlock:(void(^)(NSString *username, NSString *userID))successBlock
+- (void)verifyCredentialsRemotelyWithSuccessBlock:(void(^)(NSDictionary *account))successBlock
                                        errorBlock:(void(^)(NSError *error))errorBlock {
     
     if(_username && _password) {
         
         [self postXAuthAccessTokenRequestWithUsername:_username password:_password successBlock:^(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName) {
-            successBlock(screenName, userID);
+            
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:screenName forKey:@"screen_name"];
+            [dic setObject:screenName forKey:@"id_str"];
+            
+            successBlock(dic);
         } errorBlock:^(NSError *error) {
             errorBlock(error);
         }];
@@ -242,7 +247,7 @@
                    }
                    
                    NSDictionary *dict = response;
-                   successBlock(dict[@"screen_name"], dict[@"id_str"]);
+                   successBlock(dict);
                    
                } errorBlock:^(STHTTPRequest *r, NSDictionary *requestHeaders, NSDictionary *responseHeaders, NSError *error) {
                    errorBlock(error);
