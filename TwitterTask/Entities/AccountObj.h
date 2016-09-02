@@ -18,6 +18,9 @@
     NSString* profileImageUrl;
     NSString* profileImageUrlHttps;
     NSString* screenName;
+    NSString* parentID;
+    NSString* accessToken;
+    NSString* accessTokenSecret;
 }
 
 @property(nonatomic,retain) NSString* fullName;
@@ -30,6 +33,8 @@
 @property(nonatomic,retain) NSString* profileImageUrl;
 @property(nonatomic,retain) NSString* profileImageUrlHttps;
 @property(nonatomic,retain) NSString* screenName;
-
+@property(nonatomic,retain) NSString* parentID;
+@property(nonatomic,retain) NSString* accessToken;
+@property(nonatomic,retain) NSString* accessTokenSecret;
 
 @end

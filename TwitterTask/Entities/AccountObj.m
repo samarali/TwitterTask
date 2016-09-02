@@ -19,6 +19,9 @@
 @synthesize profileImageUrl;
 @synthesize profileImageUrlHttps;
 @synthesize screenName;
+@synthesize parentID;
+@synthesize accessToken;
+@synthesize accessTokenSecret;
 
 
 @end
