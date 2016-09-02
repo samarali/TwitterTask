@@ -95,7 +95,7 @@ typedef void (^accountChooserBlock_t)(ACAccount *account, NSString *errorMessage
             [navigationController pushViewController:tweetsController animated:YES];
         }
     }
-    else if ([viewControllerName isEqualToString:@"loadUsers"])
+    else if ([viewControllerName isEqualToString:loadUsersPopup])
     {
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         CustomNavigationController *navigationController = (CustomNavigationController *)appDelegate.centerController;
