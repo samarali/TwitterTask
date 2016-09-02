@@ -7,7 +7,7 @@
 
 #import "FollowerTableViewCell.h"
 #import "LocalizedMessages.h"
-#import "AppDelegate.h"
+#import "CommonFuntions.h"
 
 @implementation FollowerTableViewCell
 
@@ -116,6 +116,14 @@
     profileImg.frame = frame;
 
     [self loadProfileImg];
+
+    if (rowId % 2 == 0)
+        [self setBackgroundColor:[CommonFuntions getTableCellBGColor_EvenRow]];
+    else
+        [self setBackgroundColor:[CommonFuntions getTableCellBGColor_OddRow]];
+    
+    
+    
 }
 
 -(void)loadProfileImg{
