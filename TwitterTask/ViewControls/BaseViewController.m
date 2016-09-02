@@ -472,11 +472,6 @@
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     delegate.islogOut=YES;
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:@"" forKey:AccessTokenName];
-    [defaults setObject:@"" forKey:AccessTokenSecretName];
-    [defaults synchronize];
-    
     if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
         //[self.navigationController popToRootViewControllerAnimated:NO];
     }else{
