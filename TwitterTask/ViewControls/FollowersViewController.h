@@ -10,6 +10,7 @@
 #import "STTwitterAPI.h"
 #import "NSError+STTwitter.h"
 #import "STHTTPRequest+STTwitter.h"
+#import "AppDelegate.h"
 
 
 
@@ -26,6 +27,7 @@
 
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
 @property(nonatomic,retain) IBOutlet UIView *controlsView;
+@property(nonatomic,retain) AppDelegate *appDelegate;
 @property (nonatomic, assign) BOOL loadFromServer;
 @property(nonatomic,retain) NSMutableArray *listOfFollowers;
 
