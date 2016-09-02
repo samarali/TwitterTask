@@ -46,6 +46,7 @@ typedef enum mainMenuItems{
 #define LoginScreenName                            @"LoginViewController"
 #define FollowerScreenName                         @"FollowersViewController"
 #define TweetsScreenName                           @"TweetsViewController"
+#define loadUsersPopup                             @"loadUsersPopup"
 /////////////////////////////login constants/////////////////////////////
 #define ConsumerKey                                @"zszxXhZxlET04NanfFWyMftEU"
 #define ConsumerSecret                             @"YZS7PtBOrQl5VCEzmsLN4hk2odv1vkENniwyJ9IasBiIndWAp9"
