@@ -6,8 +6,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "STTwitterAPI.h"
+#import "NSError+STTwitter.h"
+#import "STHTTPRequest+STTwitter.h"
 
-@interface SideMenuViewController : UITableViewController <UITableViewDataSource,UITableViewDelegate>{
+@interface SideMenuViewController : UITableViewController <UITableViewDataSource,UITableViewDelegate,STTwitterAPIOSProtocol,UIActionSheetDelegate>{
  
     UILabel *menuTitleLbl;
     UIImageView *imageView;
