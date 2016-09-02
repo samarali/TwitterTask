@@ -13,7 +13,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGRect barFrame = self.frame;
-    barFrame.size.height = 53;
+    barFrame.size.height = 33;
     self.frame = barFrame;
     for (UIView *view in self.subviews)
     {
