@@ -130,7 +130,8 @@
     CustomNavigationController *nav=(CustomNavigationController*)appDelegate.centerController;
     [((BaseViewController*)[nav getTopView]) onMenuButtonPressed:nil];
     [((BaseViewController*)[nav getTopView]) logout];
-    [((BaseViewController*)[nav getTopView]) runQuery:@"delete from follower" listOfFollowers:nil isInsertStat:FALSE];
+    [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@",deleteStatmentKey,followerTableKey] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+    [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@",deleteStatmentKey,tweetTableKey] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
     
    // [((BaseViewController*)[nav getTopView]) logout];
     

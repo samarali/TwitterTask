@@ -45,7 +45,7 @@ typedef enum mainMenuItems{
 //////////////////////////////////////////////////////////////////
 #define LoginScreenName                            @"LoginViewController"
 #define FollowerScreenName                         @"FollowersViewController"
-
+#define TwitterScreenName                          @"TweetsViewController"
 /////////////////////////////login constants/////////////////////////////
 #define ConsumerKey                                @"zszxXhZxlET04NanfFWyMftEU"
 #define ConsumerSecret                             @"YZS7PtBOrQl5VCEzmsLN4hk2odv1vkENniwyJ9IasBiIndWAp9"
@@ -54,9 +54,14 @@ typedef enum mainMenuItems{
 #define AccessTokenName                            @"accessToken"
 #define AccessTokenSecretName                      @"accessTokenSecret"
 
-///////////////////////////Services general/////////////////////////////////
-
-
+///////////////////////////general general/////////////////////////////////
+#define dbNameKey                                  @"TwitterTask"
+#define dbTypeKey                                  @"sqlite"
+#define selectStatmentKey                          @"select * from "
+#define deleteStatmentKey                          @"delete from "
+#define insertStatmentKey                          @"insert into "
+#define followerTableKey                           @"follower "
+#define tweetTableKey                              @"tweet "
 ///////////////////////////////////User Constant////////////////////////////
 #define fullNameKey                                @"name"
 #define descriptionKey                             @"description"
@@ -69,5 +74,11 @@ typedef enum mainMenuItems{
 #define profileImageUrlHttpsKey                    @"profile_image_url_https"
 #define screenNameKey                              @"screen_name"
 #define userLangKey                                @"userLang"
+///////////////////////////////////Tweet Constant////////////////////////////
+#define tweetTimeKey                               @"created_at"
+#define tweetCreatorIDKey                          @"creator_ID"
+#define tweetTextKey                               @"text"
+#define tweetUserObjKey                            @"user."
+#define userObjKey                                 @"user"
 
 #endif

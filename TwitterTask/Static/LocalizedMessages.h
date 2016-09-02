@@ -18,6 +18,8 @@
 #define UserNameText                            ICLocalizedString(@"UserNameText",@"")
 #define UserUsernameText                        ICLocalizedString(@"UserUsernameText",@"")
 #define UserBioText                             ICLocalizedString(@"UserBioText",@"")
+//////////////////////////////////Tweets List////////////////////////////////////////
+#define TweetsNoDataFoundMsg                    ICLocalizedString(@"TweetsNoDataFoundMsg",@"")
 /////////////////////////////////////Menu items////////////////////////////////////////////////
 #define MenuItemProfileText                      ICLocalizedString(@"MenuItemProfileText",@"")
 #define MenuItemChangeLangText                   ICLocalizedString(@"MenuItemChangeLangText",@"")

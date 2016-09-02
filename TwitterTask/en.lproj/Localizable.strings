@@ -13,6 +13,8 @@ FollowersNoDataFoundMsg                  ="No Followers";
 UserNameText                             ="Name:";
 UserUsernameText                         ="UserName:";
 UserBioText                              ="Bio:";
+//////////////////////////////////Tweets List////////////////////////////////////////
+TweetsNoDataFoundMsg                     ="No Tweets";
 /////////////////////////////////////Menu items////////////////////////////////////////////////
 MenuItemProfileText                      ="My Profile";
 MenuItemChangeLangText                   ="English";

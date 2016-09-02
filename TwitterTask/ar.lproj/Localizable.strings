@@ -14,6 +14,8 @@ FollowersNoDataFoundMsg                  ="لا يوجد متابعين";
 UserNameText                             ="الاسم:";
 UserUsernameText                         ="اسم المستخدم:";
 UserBioText                              ="الوصف:";
+//////////////////////////////////Tweets List////////////////////////////////////////
+TweetsNoDataFoundMsg                     ="لا توجد تغاريد";
 /////////////////////////////////////Menu items////////////////////////////////////////////////
 MenuItemProfileText                      ="الملف الشخصي";
 MenuItemChangeLangText                   ="اللغة العربية";
