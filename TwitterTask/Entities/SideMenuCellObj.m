@@ -76,13 +76,13 @@
     switch (index) {
         //to set my profile view controller
         case MyProfileItem:
-            return  @"";
+            return  TweetsScreenName;
             break;
         case ChangeLangItem:
             [self UpdateLang_method];
             break;
         case UsersItem:
-            [self LoadUsers_method];
+            return loadUsersPopup;
             break;
         case LogoutItem:
             [self logout_method];
@@ -122,18 +122,43 @@
     
 }
 
-+(void)LoadUsers_method{
-}
+
+
 
 +(void)logout_method{
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     CustomNavigationController *nav=(CustomNavigationController*)appDelegate.centerController;
     [((BaseViewController*)[nav getTopView]) onMenuButtonPressed:nil];
     [((BaseViewController*)[nav getTopView]) logout];
-    [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@",deleteStatmentKey,followerTableKey] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
-    [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@",deleteStatmentKey,tweetTableKey] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
     
-   // [((BaseViewController*)[nav getTopView]) logout];
+    
+    NSMutableArray *list = [[NSMutableArray alloc] init];
+    
+    list = [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@ where %@=%@",selectStatmentKey,followerTableKey,parentIDKey,appDelegate.userObj.userID]];
+    NSMutableDictionary *obj;
+    if ([list count] > 0) {
+        
+        for (int i = 0 ; i < [list count]; i++) {
+            obj = [[NSMutableDictionary alloc] init];
+            obj = [list objectAtIndex:i];
+            [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@ where %@=%@",deleteStatmentKey,tweetTableKey,tweetCreatorIDKey,[obj objectForKeyedSubscript:userIDKey]] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+        }
+        [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@ where %@=%@",deleteStatmentKey,followerTableKey,parentIDKey,appDelegate.userObj.userID] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+    }
+    
+    [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@ where %@=%@",deleteStatmentKey,userTableKey,userIDKey,appDelegate.userObj.userID] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+    
+    
+    list = [[NSMutableArray alloc] init];
+    list = [((BaseViewController*)[nav getTopView]) runQuery:[NSString stringWithFormat:@"%@%@",selectStatmentKey,userTableKey]];
+    
+    if ([list count] > 0) {
+        obj = [[NSMutableDictionary alloc] init];
+        obj = [list objectAtIndex:0];
+        
+        NSString *query = [NSString stringWithFormat:@"update %@ set is_selected='1' where id_str=%@",userTableKey,[obj objectForKeyedSubscript:userIDKey]];
+        [((BaseViewController*)[nav getTopView]) runQuery:query listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
+    }
     
 }
 @end
