@@ -13,7 +13,6 @@
 #import "STTwitterAPI.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate,IIViewDeckControllerDelegate>{
-    BOOL pased;
     MyLanguages currentLang;
     BOOL islogOut;
     STTwitterAPI *twitter;
@@ -22,7 +21,6 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (nonatomic) BOOL pased;
 
 @property (retain, nonatomic) UIViewController *centerController;
 @property (retain, nonatomic) UIViewController *leftController;
