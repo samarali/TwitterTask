@@ -13,7 +13,8 @@
 + (void)showAlertWithTitle:(NSString *)title Message:(NSString *)message ;
 + (BOOL)isStringEmpty:(NSString *)string;
 + (BOOL)isStringNull:(NSString *)string ;
-
++ (UIColor*)getTableCellBGColor_OddRow;
++ (UIColor*)getTableCellBGColor_EvenRow;
 
 + (void)createFile:(AccountObj*)obj;
 +(AccountObj*)getSavedData;

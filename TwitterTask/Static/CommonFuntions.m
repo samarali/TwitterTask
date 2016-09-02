@@ -85,6 +85,13 @@
     }
     return NO;
 }
++ (UIColor*)getTableCellBGColor_OddRow{
+    return [UIColor colorWithRed:233.0/255.0 green:233.0/255.0 blue:233.0/255.0 alpha:1];
+    
+}
++ (UIColor*)getTableCellBGColor_EvenRow{
+    return [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1];
+}
 
 +(void)createFile:(AccountObj*)obj{
 
