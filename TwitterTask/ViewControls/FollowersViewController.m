@@ -6,6 +6,7 @@
 //
 
 #import "FollowersViewController.h"
+#import "TweetsViewController.h"
 #import "AppDelegate.h"
 #import "LocalizedMessages.h"
 #import "commonFuntions.h"
@@ -39,24 +40,9 @@
         [tableView setSeparatorInset:UIEdgeInsetsZero];
     }
     if (loadFromServer)
-        [self loadFollowers];
+        [self loadFollowersOnline];
     else{
-        self.listOfFollowers = [[NSMutableArray alloc]init];
-        listOfFollowers = [self runQuery:@"select * from follower"];
-        
-        if ([listOfFollowers count] > 0) {
-            AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
-            NSMutableArray* arr = [[NSMutableArray alloc] initWithArray:listOfFollowers];
-            [listOfFollowers removeAllObjects];
-            AccountObj *uObj;
-            for (int i=0; i<[arr count]; i++) {
-                NSMutableDictionary *objDic = [arr objectAtIndex:i];
-                uObj = [[AccountObj alloc] init];
-                uObj = [self convertDicToAccount:objDic lang:appdelegate.currentLang];
-                [listOfFollowers addObject:uObj];
-            }
-        }
-        [tableView reloadData];
+        [self loadFollowersOffline];
     }
     
     
@@ -76,7 +62,6 @@
     listOfFollowers = [[NSMutableArray alloc] init];
 
     tableView.allowsMultipleSelectionDuringEditing = NO;
-    [super setEditing:YES animated:YES];
 }
 
 -(void)locatizeLables{
@@ -93,7 +78,7 @@
 
 
 #pragma mark - methods
--(void)loadFollowers{
+-(void)loadFollowersOnline{
     
     AppDelegate *appDelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
     
@@ -108,21 +93,41 @@
         [self hideActivityViewer];
         
     } errorBlock:^(NSError *error) {
+        [self loadFollowersOffline];
         [CommonFuntions showAlertWithTitle:ApplicationTitleText Message:[error localizedDescription]];
         [self hideActivityViewer];
     }];
+}
+
+-(void)loadFollowersOffline{
+    self.listOfFollowers = [[NSMutableArray alloc]init];
+    listOfFollowers = [self runQuery:[NSString stringWithFormat:@"%@%@",selectStatmentKey,followerTableKey]];
+    
+    if ([listOfFollowers count] > 0) {
+        NSMutableArray* arr = [[NSMutableArray alloc] initWithArray:listOfFollowers];
+        [listOfFollowers removeAllObjects];
+        AccountObj *uObj;
+        NSMutableDictionary *objDic;
+        for (int i=0; i<[arr count]; i++) {
+            objDic = [[NSMutableDictionary alloc] init];
+            objDic = [arr objectAtIndex:i];
+            uObj = [[AccountObj alloc] init];
+            uObj = [self convertDicToAccount:objDic];
+            [listOfFollowers addObject:uObj];
+        }
+    }
+    [tableView reloadData];
 }
 
 -(void)fillUsersArray:(NSArray *)users{
     NSMutableDictionary *objDic;
     AccountObj *uObj;
     listOfFollowers = [[NSMutableArray alloc] init];
-    AppDelegate *appdelegate=(AppDelegate *)[[UIApplication sharedApplication] delegate];
     for (int i =0 ; i < [users count]; i++) {
         objDic = [[NSMutableDictionary alloc] init];
         objDic = [users objectAtIndex:i];
         uObj = [[AccountObj alloc] init];
-        uObj = [self convertDicToAccount:objDic lang:appdelegate.currentLang];
+        uObj = [self convertDicToAccount:objDic];
         [listOfFollowers addObject:uObj];
     }
     
@@ -130,7 +135,7 @@
     
 }
 
--(AccountObj *)convertDicToAccount:(NSMutableDictionary *)objDic lang:(MyLanguages)lang{
+-(AccountObj *)convertDicToAccount:(NSMutableDictionary *)objDic{
     AccountObj *uObj = [[AccountObj alloc] init];
     uObj.fullName = [objDic objectForKey:fullNameKey];
     uObj.description = [objDic objectForKey:descriptionKey];
@@ -146,11 +151,15 @@
 }
 
 -(void)updateDB:(BOOL)firsttime{
+    /*
+     CREATE TABLE follower(_id integer primary key, name text, description text, followers_count text, statuses_count text, id_str text, profile_background_image_url text, profile_background_image_url_https text, profile_image_url text, profile_image_url_https text, screen_name text);
+     */
+    
     NSString *query;
     //delete old records if it called from login page
     if (firsttime) {
-        query = @"delete from follower";
-        [self runQuery:query listOfFollowers:nil isInsertStat:FALSE];
+        
+        [self runQuery:[NSString stringWithFormat:@"%@%@",deleteStatmentKey,followerTableKey] listOfFollowers:nil listOfTweets:nil isInsertStat:FALSE];
     }
     query = @"insert into follower values";
     for (int i = 0; i < [listOfFollowers count]; i++) {
@@ -159,7 +168,7 @@
         else
             query = [NSString stringWithFormat:@"%@,(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",query];
     }
-    [self runQuery:query listOfFollowers:listOfFollowers isInsertStat:YES];
+    [self runQuery:query listOfFollowers:listOfFollowers listOfTweets:nil isInsertStat:YES];
     
 }
 
@@ -274,6 +283,14 @@
 
 - (void)tableView:(UITableView *)tblView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+    AccountObj *uObj = [listOfFollowers objectAtIndex:indexPath.row];
+    
+    TweetsViewController *tweetsController = (TweetsViewController *)[self.storyboard instantiateViewControllerWithIdentifier:TwitterScreenName];
+    tweetsController.loadFromServer = loadFromServer;
+    tweetsController.selectedUser = uObj.userID;
+    [self.navigationController pushViewController:tweetsController animated:YES];
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
