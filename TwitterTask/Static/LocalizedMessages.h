@@ -28,8 +28,9 @@
 #define MenuTitleText                            ICLocalizedString(@"MenuTitleText",@"")
 //////////////////////////////////General////////////////////////////////////////
 #define ApplicationTitleText                    ICLocalizedString(@"ApplicationTitleText",@"")
+#define NoInternetConnection                    ICLocalizedString(@"NoInternetConnection",@"")
 #define OKayButtonText                          ICLocalizedString(@"OKayButtonText",@"")
-#define CancelButtonText                        ICLocalizedString(@"CancelButtonText",@"")
+#define ActionSheetCancelTxt                    ICLocalizedString(@"ActionSheetCancelTxt",@"")
 /////////////////////////////update language//////////////////////////////////////////
 #define UpdateLanguageConfirmationMsg           ICLocalizedString(@"UpdateLanguageConfirmationMsg",@"")
 ///////////////////////////////////////////////////////////////////////////////////////////////

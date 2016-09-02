@@ -24,7 +24,8 @@ MenuItemLogoutText                       ="تسجيل خروج";
 MenuTitleText                            ="القائمة";
 //////////////////////////////////General////////////////////////////////////////
 ApplicationTitleText                     ="تويتتر";
+NoInternetConnection                     ="لا يوجد اتصال بالشبكه";
 OKayButtonText                           ="موافق";
-CancelButtonText                         ="إلغاء";
+ActionSheetCancelTxt                     ="تم الغاد الاختيار";
 /////////////////////////////update language//////////////////////////////////////////
 UpdateLanguageConfirmationMsg            ="تم تعديل اللغه بنجاح";

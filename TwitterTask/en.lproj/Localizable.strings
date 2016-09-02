@@ -23,7 +23,8 @@ MenuItemLogoutText                       ="Logout";
 MenuTitleText                            ="Menu";
 //////////////////////////////////General////////////////////////////////////////
 ApplicationTitleText                     ="Twitter";
+NoInternetConnection                     ="No Internet Connection";
 OKayButtonText                           ="OK";
-CancelButtonText                         ="Cancel";
+ActionSheetCancelTxt                     ="Account selection was cancelled.";
 /////////////////////////////update language//////////////////////////////////////////
 UpdateLanguageConfirmationMsg            ="Language has been updated";
