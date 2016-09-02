@@ -16,9 +16,4 @@
 + (UIColor*)getTableCellBGColor_OddRow;
 + (UIColor*)getTableCellBGColor_EvenRow;
 
-+ (void)createFile:(AccountObj*)obj;
-+(AccountObj*)getSavedData;
-+ (void)clearUserData;
-
-
 @end
