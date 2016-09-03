@@ -383,7 +383,6 @@
 			isa = PBXGroup;
 			children = (
 				247A4E581D79DA6200535618 /* Libs */,
-				247A4E571D79DA5600535618 /* New Group */,
 				2446145319C97A7400DACB58 /* ViewControls */,
 				2446145219C97A4900DACB58 /* Static */,
 				2446145019C97A0400DACB58 /* Entities */,
@@ -507,13 +506,6 @@
 				24B4DF901D7388B600011104 /* MyNavBar.m */,
 			);
 			path = NavigatorControllers;
-			sourceTree = "<group>";
-		};
-		247A4E571D79DA5600535618 /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "New Group";
 			sourceTree = "<group>";
 		};
 		247A4E581D79DA6200535618 /* Libs */ = {
