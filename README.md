@@ -57,8 +57,8 @@ LoginViewController:
 	a-setAppLanguage to update app delete.current language and language key in NSUserDefaults.
 	b-locatizeLables in update localization of screens
 	c- switchToEnglishLayout or switchToArabicLayout according to previous language to update layout of screen. 
-
-2-in press login button (onLoginPressed) try to open authorization page with application ConsumerKey & ConsumerSecret.
+2-check last updated language if != curerent -> update the current language
+3-in press login button (onLoginPressed) try to open authorization page with application ConsumerKey & ConsumerSecret.
 
 Step 2 - Save user  
 ------------------------
@@ -144,4 +144,11 @@ you can do that from:
 	b-locatizeLables in update localization of screens
 	c- switchToEnglishLayout or switchToArabicLayout according to previous language to update layout of screens
 2-By press change language from sidemen (SideMenuViewController) in SideMenuCellObj class 
+
+Multi User Login:
+------------------------
+LoginViewController:
+in viewdidload select list of users from user table to get last user object and check his accesstoken and secret:
+1- if = null this mean the last looged in user was from ios settings so verify the user by passing account object to api (twitterAPIOSWithAccount,verifyCredentialsWithUserSuccessBlock )and load his followers like previous.
+2-else = value this mean thl last logged in user was authorized and the app has his access token & secret to verify the user by passing appConsumerKey, appConsumerSecret , accesstoken & secret (twitterAPIWithOAuthConsumerKey,getAccountVerifyCredentialsWithIncludeEntites) and lood his follwoers like previous also.
 
